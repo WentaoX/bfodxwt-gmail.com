@@ -64,7 +64,16 @@ def genCircle(N=5242):
     """
     ############################################################################
     # TODO: Your code here!
-    Graph = None
+    Graph = snap.PUNGraph.New()
+
+    # Add node
+    for node in range(1, N+1):
+        Graph.AddNode(node)
+
+    # Add edge
+    for node in range(1, N):
+        Graph.AddEdge(node, node+1)
+    Graph.AddEdge(1, N)
     ############################################################################
     return Graph
 
@@ -80,7 +89,10 @@ def connectNbrOfNbr(Graph, N=5242):
     """
     ############################################################################
     # TODO: Your code here!
-
+    for node in range(1, N-1):
+        Graph.AddEdge(node, node+2)
+    Graph.AddEdge(N-1, 1)
+    Graph.AddEdge(N, 2)
     ############################################################################
     return Graph
 
@@ -96,7 +108,18 @@ def connectRandomNodes(Graph, M=4000):
     """
     ############################################################################
     # TODO: Your code here!
-    
+    N = Graph.GetNodes()
+    nodes = list(range(1, N + 1))
+    added_edges_n = 0
+    added_edges_stamp = set([])
+    while added_edges_n < M:
+        node1, node2 = random.sample(nodes, 2)
+        if np.abs(node1 - node2) not in [1, 2, N-1, N-2]:
+            stamp = str(np.max([node1, node2])) + '-' + str(np.min([node1, node2]))
+            if stamp not in added_edges_stamp:
+                added_edges_stamp.add(stamp)
+                added_edges_n += 1
+                Graph.AddEdge(node1, node2)
     ############################################################################
     return Graph
 
@@ -114,6 +137,12 @@ def genSmallWorld(N=5242, E=14484):
     Graph = connectRandomNodes(Graph, 4000)
     return Graph
 
+def test_genSamllWorld(N=5242, E=14484):
+    Graph = genSmallWorld(N, E)
+    assert Graph.GetEdges() == E
+    assert Graph.GetNodes() == N
+
+test_genSamllWorld()
 
 def loadCollabNet(path):
     """
