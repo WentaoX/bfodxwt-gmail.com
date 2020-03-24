@@ -174,7 +174,13 @@ def getDataPointsToPlot(Graph):
     ############################################################################
     # TODO: Your code here!
     X, Y = [], []
-
+    DegToCntV = snap.TIntPrV()
+    snap.GetDegCnt(Graph, DegToCntV)
+    for item in DegToCntV:
+        X.append(item.GetVal1())
+        Y.append(item.GetVal2())
+    # normalize count to frequencies
+    Y = list(Y/np.sum(Y))
     ############################################################################
     return X, Y
 
