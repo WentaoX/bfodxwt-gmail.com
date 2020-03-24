@@ -155,8 +155,10 @@ def loadCollabNet(path):
     """
     ############################################################################
     # TODO: Your code here!
-    Graph = None
-
+    Graph = snap.LoadEdgeList(snap.PUNGraph, "./CA-GrQc.txt", 0, 1)
+    snap.DelSelfEdges(Graph)
+    assert Graph.GetNodes() == 5242
+    assert Graph.GetEdges() == 14484
     ############################################################################
     return Graph
 
