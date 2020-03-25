@@ -227,8 +227,21 @@ def calcClusteringCoefficientSingleNode(Node, Graph):
     """
     ############################################################################
     # TODO: Your code here!
-    C = 0.0
-
+    # C = 0.0
+    ki = Node.GetDeg()
+    if ki < 2:
+        return 0
+    else:
+        Nbrs = snap.TIntV()
+        common_neighbours = 0
+        for Id in Node.GetOutEdges():
+            common_neighbour = snap.GetCmnNbrs(Graph, Node.GetId(), Id, Nbrs)
+            common_neighbours += common_neighbour
+        # ei is number of edges between neighbours,
+        # divide by 2, because each pair of connected neighbours are counted twice
+        ei = common_neighbours / 2
+        # c = 2ei/ki(ki-1)
+        C = 2 * ei / (ki * (ki - 1))
     ############################################################################
     return C
 
@@ -242,8 +255,10 @@ def calcClusteringCoefficient(Graph):
     ############################################################################
     # TODO: Your code here! If you filled out calcClusteringCoefficientSingleNode,
     #       you'll probably want to call it in a loop here
-    C = 0.0
-
+    coefficients = []
+    for Node in Graph.Nodes():
+        coefficients.append(calcClusteringCoefficientSingleNode(Node, Graph))
+    C = np.mean(coefficients)
     ############################################################################
     return C
 
