@@ -42,19 +42,19 @@ def create_basic_features(data_path = './hw1-q2.graph'):
     features[:, 0] = degrees
     features[:, 1] = egonet_in
     features[:, 2] = egonet_out
-    return nodes_index, features
+    return Graph, features
 
-def calculate_top_near_nodes(featuers, center_node, top_n):
+def calculate_top_near_nodes(features, center_node, top_n):
     '''
     :param featuers: numpy array, each row is vector for each node
     :param center_node: the node we want to compare with each other of the rest
     :param top_n: return the number of most similar nodes
     :return: a list of index
     '''
-    similarity_score = np.dot(features, featuers[center_node, :])
+    similarity_score = np.dot(features, features[center_node, :])
     # normalize
-    norm_center_node = np.linalg.norm(featuers[center_node, :])
-    norm_all_nodes = np.linalg.norm(featuers, axis=1)
+    norm_center_node = np.linalg.norm(features[center_node, :])
+    norm_all_nodes = np.linalg.norm(features, axis=1)
     normalizer = np.dot(norm_all_nodes, norm_center_node)
 
     # normalize
@@ -70,11 +70,51 @@ def calculate_top_near_nodes(featuers, center_node, top_n):
     print(similarity_score[sorted_n])
     return sorted_n
 
-nodes_index, features = create_basic_features()
-nodes_id_top = calculate_top_near_nodes(features, 9, 5)
-print("feature for node 9 is:")
-print(features[9, :])
-print('top 5 similar nodes are:')
-print(nodes_id_top)
-print('top 5 nodes of vectors are:')
-print(features[nodes_id_top, :])
+
+def q2(features_xy, center_node=9, top_n=5):
+    nodes_id_top = calculate_top_near_nodes(features_xy, center_node, top_n)
+    print("feature for node 9 is:")
+    print(features_xy[center_node, :])
+    print('top 5 similar nodes are:')
+    print(nodes_id_top)
+    print('top 5 nodes of vectors are:')
+    print(features_xy[nodes_id_top, :])
+
+
+Graph, features = create_basic_features()
+q2(features)
+
+
+def recursieve_features(Graph, features, recursive_level):
+    '''
+    :param Graph: Graph
+    :param features:  basic featurs of Graph
+    :param recursive_level: int, how many steps to recurse
+    :return: features with recursive features added
+    '''
+    while recursive_level > 0:
+        features_shape = features.shape
+        # the vector x2 because of mean and sum
+        features_new = np.zeros(shape=[features_shape[0], features_shape[1] * 2])
+        for Node in Graph.Nodes():
+            current_node_id = Node.GetId()
+            node_neighbors = []
+            for id in Node.GetOutEdges():
+                node_neighbors.append(id)
+                neighbors_n = len(node_neighbors)
+            if neighbors_n > 0:
+                vector_neighbors = features[node_neighbors, :]
+
+                vector_sum = np.sum(vector_neighbors, axis=0)
+                vector_mean = vector_sum / neighbors_n
+                vector_new = np.concatenate((vector_mean, vector_sum), axis=0)
+                features_new[current_node_id, :] = vector_new
+        features = np.concatenate((features, features_new), axis=1)
+
+        recursive_level -= 1
+    print (features.shape)
+    return features
+
+
+features_new = recursieve_features(Graph, features, 2)
+q2(features_new)
