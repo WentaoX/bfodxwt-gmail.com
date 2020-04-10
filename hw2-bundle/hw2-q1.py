@@ -53,4 +53,12 @@ def relational_classification():
     neg_nodes = [node for node, value in scores.items() if value < threshold]
     print('negative nodes are:\n', neg_nodes)
 
+# q1.1
 relational_classification()
+
+def belief_propagation():
+    '''
+    to be done
+    :return:
+    '''
+    pass
